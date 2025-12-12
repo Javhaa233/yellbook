@@ -1,83 +1,115 @@
 # YellBook - Монголын Шар Ном
 
-![CI Status](https://github.com/Baterdene23/yellbook/actions/workflows/ci.yml/badge.svg)
+![CI Status](https://github.com/Javhaa233/yellbook/actions/workflows/ci.yml/badge.svg)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-20.x-green.svg)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://docker.com/)
 
 ШАР НОМ цахим систем - Монголын байгууллагуудын мэдээллийн сан
 
-## Project Overview
+## 📋 Project Overview
 
 Nx monorepo архитектур ашиглан:
 - **Frontend**: Next.js 15 App Router (React 19)
 - **Backend**: Fastify + Prisma ORM
 - **Database**: PostgreSQL 16
+- **Cache**: Redis 7
 - **Containerization**: Docker multi-stage builds
 - **Registry**: AWS ECR
 - **CI/CD**: GitHub Actions with Matrix build
+- **Auth**: NextAuth.js with GitHub OAuth
+- **AI**: OpenAI embeddings + semantic search
 
-## Lab 6 Deliverables
+## 🎯 Lab 6 Deliverables
 
 ### ✅ Dockerfiles (30 points)
-- `Dockerfile.api` - Fastify API multi-stage build
-- `Dockerfile.web` - Next.js frontend multi-stage build
-- Both use Node.js 20-alpine base
-- Production-optimized with minimal layers
+- **Dockerfile.api** - Fastify API with Prisma multi-stage build
+- **Dockerfile.web** - Next.js frontend optimized build  
+- Both use `node:20-alpine` base for minimal size
+- Production-optimized with layer caching
+- Health checks included
 
 ### ✅ GitHub Actions CI/CD (30 points)
-- **Workflows**: `.github/workflows/ci.yml`
-- **Matrix Strategy**: Builds both API and Web apps
+- **Workflow**: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
+- **Matrix Strategy**: Parallel builds for API and Web
 - **Stages**:
-  1. Lint & Type Check
-  2. Docker Build & ECR Push
-  3. Security Scan (Trivy)
-  4. Health Check
+  1. **Lint & Build**: ESLint, TypeScript, Nx build
+  2. **Docker Build & Push**: Multi-architecture support
+  3. **Security Scan**: Trivy vulnerability scanning
+  4. **Health Check**: ECR image verification
 
 ### ✅ AWS ECR Repositories (20 points)
-- **Region**: ap-southeast-1
-- **API Image**: `754029048634.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api`
-- **Web Image**: `754029048634.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web`
-- **Scanning**: Enabled on push
+- **Region**: `ap-southeast-1`
+- **API Repository**: `<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api`
+- **Web Repository**: `<account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web`
+- **Image Scanning**: Enabled on push
+- **Lifecycle Policy**: Keep last 10 images
+- **Tags**: Git SHA + `latest`
 
 ### ✅ Local Sanity Check (10 points)
 ```bash
-# Docker Compose validation
+# Build images locally
+docker build -f Dockerfile.api -t yellbook-api:local .
+docker build -f Dockerfile.web -t yellbook-web:local .
+
+# Run full stack
 docker-compose up -d
+
+# Verify services
 docker-compose ps
-# Both services should be healthy
+# db, redis, api, web should all be healthy
 ```
 
 ### ✅ Documentation (10 points)
-- README with setup instructions
-- CI badge and deployment info
-- ECR repository links
+- ✅ README with badges and instructions
+- ✅ ECR setup guide: [ECR_SETUP.md](ECR_SETUP.md)
+- ✅ GitHub secrets configuration
+- ✅ CI/CD workflow documentation
 
 ### 🎁 Bonus: Matrix Build Strategy (+10 points)
-- Separate matrix jobs for API and Web
-- Runs on both `push` and `pull_request` events
-- Conditional ECR push only on `push` to main
+- ✅ Separate matrix jobs for `api` and `web`
+- ✅ Runs on both `push` and `pull_request` events
+- ✅ Conditional ECR push only on main branch
+- ✅ PR builds test without pushing to registry
 
-## ECR Images
+## 🐳 ECR Images
 
-Latest images pushed to ECR with git SHA tags:
+Latest images available in AWS ECR:
 
-| App | Repository | Latest Tag |
-|-----|-----------|-----------|
-| API | `yellbook/api` | [View on ECR](https://console.aws.amazon.com/ecr/repositories/yellbook/api) |
-| Web | `yellbook/web` | [View on ECR](https://console.aws.amazon.com/ecr/repositories/yellbook/web) |
+| Service | Repository | Tag Format | Latest |
+|---------|-----------|-----------|--------|
+| **API** | `yellbook/api` | `<git-sha>`, `latest` | [View ECR](https://console.aws.amazon.com/ecr/) |
+| **Web** | `yellbook/web` | `<git-sha>`, `latest` | [View ECR](https://console.aws.amazon.com/ecr/) |
 
-## CI/CD Workflow
+### Pull Images
+```bash
+# Login to ECR
+aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com
 
-[![CI Workflow](https://github.com/Baterdene23/yellbook/workflows/ci.yml/badge.svg)](https://github.com/Baterdene23/yellbook/actions)
+# Pull API image
+docker pull <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
 
-Latest run: **All stages green** ✅
-- lint-and-build: PASS
-- docker-build-push (api): PASS
-- docker-build-push (web): PASS
-- security-scan: PASS
-- health-check: PASS
+# Pull Web image
+docker pull <account-id>.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web:latest
+```
 
-## Getting Started
+## 🚀 CI/CD Workflow
+
+[![CI/CD Pipeline](https://github.com/Javhaa233/yellbook/actions/workflows/ci.yml/badge.svg)](https://github.com/Javhaa233/yellbook/actions)
+
+**Latest Run**: [View Actions](https://github.com/Javhaa233/yellbook/actions)
+
+Pipeline Stages:
+- ✅ **lint-and-build**: ESLint + TypeScript + Nx build
+- ✅ **docker-build-push**: Multi-stage Docker builds + ECR push
+- ✅ **docker-build-pr**: PR validation (build only, no push)
+- ✅ **security-scan**: Trivy vulnerability scanning
+- ✅ **health-check**: ECR image metadata verification
+
+## 📦 Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - Docker & Docker Compose
 - AWS CLI configured with ECR credentials
