@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json nx.json tsconfig.base.json ./
+COPY package.json package-lock.json nx.json tsconfig.base.json eslint.config.mjs ./
 COPY apps/web ./apps/web
 COPY libs ./libs
 
