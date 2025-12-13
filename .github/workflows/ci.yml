@@ -55,6 +55,11 @@ jobs:
         run: npm run typecheck
 
       - name: Build API & Web
+        env:
+          NEXT_PUBLIC_BACKEND_URL: http://localhost:3001
+          NEXTAUTH_SECRET: dummy-secret-for-build
+          GITHUB_ID: dummy
+          GITHUB_SECRET: dummy
         run: npm run build
 
   docker-build-push:
