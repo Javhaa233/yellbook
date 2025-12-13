@@ -48,12 +48,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Nx Reset (prepare cache)
-        run: npx nx reset
-
-      - name: Generate Nx Project Graph
-        run: npx nx graph --file=project-graph.json
-
       - name: Run Lint
         run: npm run lint 2>/dev/null || true
 
