@@ -3,27 +3,28 @@ import axios from 'axios';
 
 const prisma = new PrismaClient();
 
-// OpenAI API ашиглана - embedding хэрэгтэй
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const EMBEDDING_MODEL = 'text-embedding-3-small';
+// Google Gemini API ашиглана - embedding хэрэгтэй
+const GEMINI_API_KEY = process.env.OPENAI_API_KEY; // Using same env var
+const EMBEDDING_MODEL = 'text-embedding-004';
 
 async function getEmbedding(text: string): Promise<number[]> {
   try {
     const response = await axios.post(
-      'https://api.openai.com/v1/embeddings',
+      `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent?key=${GEMINI_API_KEY}`,
       {
-        model: EMBEDDING_MODEL,
-        input: text,
+        model: `models/${EMBEDDING_MODEL}`,
+        content: {
+          parts: [{ text }]
+        }
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
       }
     );
 
-    return response.data.data[0].embedding;
+    return response.data.embedding.values;
   } catch (error) {
     console.error('Embedding error:', error);
     throw error;

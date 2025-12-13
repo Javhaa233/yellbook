@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import { createClient } from 'redis';
@@ -26,8 +26,8 @@ const redis = createClient({
   password: process.env.REDIS_PASSWORD,
 });
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const EMBEDDING_MODEL = 'text-embedding-3-small';
+const GEMINI_API_KEY = process.env.OPENAI_API_KEY; // Using same env var
+const EMBEDDING_MODEL = 'text-embedding-004';
 const CACHE_TTL = 3600; // 1 hour
 
 // Connect to Redis
@@ -36,20 +36,21 @@ redis.on('error', (err: Error) => console.error('Redis error:', err));
 async function getEmbedding(text: string): Promise<number[]> {
   try {
     const response = await axios.post(
-      'https://api.openai.com/v1/embeddings',
+      `https://generativelanguage.googleapis.com/v1beta/models/${EMBEDDING_MODEL}:embedContent?key=${GEMINI_API_KEY}`,
       {
-        model: EMBEDDING_MODEL,
-        input: text,
+        model: `models/${EMBEDDING_MODEL}`,
+        content: {
+          parts: [{ text }]
+        }
       },
       {
         headers: {
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
           'Content-Type': 'application/json',
         },
       }
     );
 
-    return response.data.data[0].embedding;
+    return response.data.embedding.values;
   } catch (error) {
     console.error('Embedding error:', error);
     throw error;
@@ -142,9 +143,7 @@ async function searchYellowBooks(req: AISearchRequest): Promise<SearchResult[]> 
   return results;
 }
 
-export async function aiSearchRoutes(
-  fastify: FastifyInstance
-) {
+const aiSearchRoutes: FastifyPluginAsync = async (fastify) => {
   // Connect Redis
   if (!redis.isOpen) {
     await redis.connect();
@@ -195,4 +194,6 @@ export async function aiSearchRoutes(
       }
     }
   );
-}
+};
+
+export default aiSearchRoutes;
