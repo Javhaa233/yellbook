@@ -1,9 +1,10 @@
 name: Deploy to EKS
 
 on:
-  push:
-    branches:
-      - main
+  # Disabled for now - enable after EKS cluster is set up
+  # push:
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 env:
