@@ -1,20 +1,229 @@
-# Setting up YellBook on a Completely Fresh Computer
+# Setting up YellBook on a Brand New Computer
+## (No programming tools installed - Complete beginner guide)
 
-## Prerequisites Installation (30-45 minutes)
+---
 
-### Step 1: Install Node.js (Required)
-1. Go to https://nodejs.org/
-2. Download **Node.js 20 LTS** (or latest)
-3. Run installer, click "Next" through all steps
-4. Verify installation:
-   ```bash
-   node --version   # Should show v20.x.x
-   npm --version    # Should show 10.x.x
+## ⚠️ READ THIS FIRST
+
+This computer needs:
+- ✅ Windows 10 or 11
+- ✅ Internet connection
+- ✅ Administrator access (ability to install programs)
+- ⏱️ **1-2 hours total setup time**
+
+---
+
+## Part 1: Install Required Software (45-60 minutes)
+
+### Before You Start - Open PowerShell
+
+**PowerShell is where you type commands. Here's how to open it:**
+
+1. Click **Windows Start button** (bottom left)
+2. Type: `powershell`
+3. You'll see **"Windows PowerShell"** appear
+4. **Right-click** on it
+5. Select **"Run as administrator"**
+6. Click **"Yes"** when asked for permission
+7. You'll see a blue window with white text - this is PowerShell!
+
+**Keep this window open!** You'll use it throughout this guide.
+
+---
+
+## Step 1: Install Node.js (JavaScript Runtime) - 10 minutes
+
+**What is Node.js?** It's the software that runs JavaScript code on your computer (not just in browser).
+
+**Installation Steps:**
+
+1. **Open your web browser** (Chrome, Edge, Firefox)
+2. **Go to:** https://nodejs.org/
+3. You'll see a green button that says **"Download Node.js (LTS)"**
+4. Click the **green button** (it will say something like "20.11.0 LTS")
+5. **Wait** for the file to download (about 30 MB)
+6. **Find** the downloaded file:
+---
+
+## Step 2: Install Git (Version Control) - 10 minutes
+
+**What is Git?** It's software that downloads code from GitHub and tracks changes.
+
+**Installation Steps:**
+
+1. **Open browser** and go to: https://git-scm.com/download/win
+2. The download should **start automatically**
+   - If not, click the blue **"Click here to download manually"** link
+3. **Wait** for download (about 50 MB)
+4. **Find** the file: `Git-2.x.x-64-bit.exe` in Downloads
+5. **Double-click** to run installer
+6. **Important screens:**
+   - **"Select Components"** - keep all checkboxes as they are, click Next
+   - **"Choosing the default editor"** - select "Use Notepad", click Next
+   - **"Adjusting PATH environment"** - select **"Git from the command line and also from 3rd-party software"** ⚠️ IMPORTANT!
+   - **"Choosing HTTPS transport"** - keep default, click Next
+   - **"Configuring line endings"** - keep default, click Next
+   - All other screens - just click **Next**
+7. Click **"Install"**
+8. **Wait 2-3 minutes**
+9. **Uncheck** "View Release Notes"
+10. Click **"Finish"**
+
+**Verify Installation:**
+
+1. **Close** and **re-open** PowerShell (as administrator)
+2. Type and press Enter:
+   ```powershell
+   git --version
    ```
+3. Should see: `git version 2.43.0` or similar
 
-### Step 2: Install Git (Required)
-1. Go to https://git-scm.com/download/win
-2. Download Git installer
+**✅ If you see version - SUCCESS!**fy Installation:**
+
+---
+
+## Step 3: Install Docker Desktop (Container Platform) - 15 minutes
+
+**What is Docker?** It runs PostgreSQL database and Redis cache in isolated containers.
+
+**Important:** Your computer needs Windows 10/11 Pro, Enterprise, or Education. If you have Windows Home, you need to enable WSL2 first.
+
+**Installation Steps:**
+
+1. **Open browser** and go to: https://www.docker.com/products/docker-desktop/
+2. Click the big blue button: **"Download for Windows"**
+3. **Wait** for download (about 600 MB - may take 5-10 minutes)
+4. **Find** file: `Docker Desktop Installer.exe` in Downloads
+5. **Double-click** to run installer
+6. **Check** the box: "Use WSL 2 instead of Hyper-V" (if shown)
+7. Click **"OK"**
+8. **Wait 5-10 minutes** for installation
+9. You'll see: **"Installation succeeded"**
+10. Click **"Close and restart"**
+11. **Your computer will RESTART** - this is normal!
+
+**After Computer Restarts:**
+
+1. **Docker Desktop** will open automatically
+2. You'll see **"Docker Subscription Service Agreement"**
+3. Click **"Accept"**
+4. **Choose:** "Use recommended settings"
+5. Click **"Finish"**
+6. **Wait** for "Docker Desktop is running" message (1-2 minutes)
+7. You'll see a 🐋 whale icon in your system tray (bottom-right)
+
+**Verify Installation:**
+
+1. **Open PowerShell** (as administrator)
+2. Type and press Enter:
+   ```powershell
+   docker --version
+---
+
+## Step 4: Install VS Code (Code Editor) - OPTIONAL but Recommended - 5 minutes
+
+**What is VS Code?** A text editor for code. Makes it easier to view and edit files.
+
+**You can skip this if you want to use Notepad.**
+
+**Installation Steps:**
+
+---
+
+## ✅ CHECKPOINT: Prerequisites Complete!
+
+**Before moving on, make sure all commands work:**
+
+Open PowerShell and run these commands:
+```powershell
+node --version     # Should show v20.x.x
+npm --version      # Should show 10.x.x  
+git --version      # Should show git version 2.x.x
+docker --version   # Should show Docker version 24.x.x
+docker ps          # Should show empty table (no errors)
+```
+
+**If ANY command fails:**
+1. Restart your computer
+2. Open PowerShell again
+3. Try the commands again
+4. If still failing, re-install that specific software
+
+---
+
+# Part 2: Download and Setup Project (15 minutes)
+
+**Now we'll download the YellBook project code from GitHub.**
+
+---
+
+## Step 5: Create a Folder for Projects
+
+**In PowerShell, type these commands one by one:**
+
+```powershell
+# Go to C: drive
+cd C:\
+
+# Create a folder called "projects"
+mkdir projects
+
+# Go into that folder
+cd projects
+
+# Check where you are (should show C:\projects)
+pwd
+```
+
+**You should see:** `C:\projects`
+
+---
+
+## Step 6: Download the Project from GitHub
+
+**In PowerShell, type this command:**
+
+```powershell
+git clone https://github.com/Javhaa233/yellbook.git
+```
+
+**What you'll see:**
+```
+Cloning into 'yellbook'...
+remote: Counting objects: 100% (1234/1234)
+remote: Compressing objects: 100% (567/567)
+Receiving objects: 100% (1234/1234), 5.67 MiB | 2.34 MiB/s, done.
+```
+
+**This takes 1-2 minutes depending on your internet speed.**
+
+**When done, type:**
+```powershell
+cd yellbook
+```
+
+**You're now inside the project folder!**
+
+---
+
+## Step 7: Install Project Dependencies
+
+**This downloads all the libraries and packages the project needs.**
+
+**In PowerShell, type:**
+```powershell
+npm install
+```
+
+**What you'll see:**
+```
+npm WARN deprecated ...
+added 2456 packages in 3m
+```
+
+**⏱️ This takes 5-10 minutes!** Go get coffee ☕
+
+**When done, you'll see your command prompt again.**Download Git installer
 3. Run installer:
    - Select "Use Git from Git Bash and also from Windows Command Prompt"
    - Keep all other defaults
@@ -65,25 +274,58 @@ cd C:\
 mkdir projects
 cd projects
 
-git clone https://github.com/Javhaa233/yellbook.git
-cd yellbook
-```
+---
 
-### 2. Install dependencies
-```bash
-npm install
-```
+## Step 13: Open the Application in Your Browser
 
-### 3. Setup environment variables
+**Now the app is running! Let's test it.**
 
-#### Create Web environment file (apps/web/.env.local)
-```bash
-# In PowerShell, from yellbook directory:
-cd apps\web
+1. **Open** your web browser (Chrome, Edge, Firefox)
+2. **Go to:** http://localhost:3000
 
-# Create .env.local file - copy this content:
-New-Item -Path .env.local -ItemType File
-```
+**You should see the YellBook homepage!**
+
+---
+
+### Test 1: Basic Homepage
+- ✅ You should see businesses listed
+- ✅ You can click on a business to see details
+- ✅ Navigation menu at the top works
+
+### Test 2: OAuth Login
+1. Click **"Sign In"** button (top right)
+2. Click **"Sign in with GitHub"**
+3. **Log in with your GitHub account**
+4. You should be **redirected back** to the website
+5. You should see **your GitHub avatar** in the top right
+
+### Test 3: AI Search
+1. **Go to:** http://localhost:3000/yellow-books/search
+2. **Type:** "restaurant in Ulaanbaatar"
+3. Press **Enter**
+4. You should see **a list of restaurants**
+
+### Test 4: API Health Check
+1. **Go to:** http://localhost:3001/health
+2. You should see: `{"status":"ok"}`
+
+---
+
+## 🎉 SUCCESS! Everything is Working!
+
+**Your YellBook application is now running!**
+
+To stop the servers:
+- Go to each PowerShell window
+- Press **Ctrl + C**
+- Type **Y** and press Enter
+
+To start again later:
+1. Start Docker Desktop
+2. Run `npm run start:api` in Terminal 1
+3. Run `npm run start:web` in Terminal 2
+
+---
 
 **Paste this into apps/web/.env.local:**
 ```
