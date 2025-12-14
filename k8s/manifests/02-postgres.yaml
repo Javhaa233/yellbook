@@ -1,24 +1,9 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: postgres-pvc
-  namespace: yellowbooks
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: gp2
-  resources:
-    requests:
-      storage: 20Gi
-
----
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: postgres
   namespace: yellowbooks
 spec:
-  serviceName: postgres
   replicas: 1
   selector:
     matchLabels:
@@ -48,6 +33,7 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data
+          subPath: postgres
         livenessProbe:
           exec:
             command:
@@ -66,8 +52,7 @@ spec:
           periodSeconds: 10
       volumes:
       - name: postgres-storage
-        persistentVolumeClaim:
-          claimName: postgres-pvc
+        emptyDir: {}
 
 ---
 apiVersion: v1

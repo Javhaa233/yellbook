@@ -1,6 +1,9 @@
 import Fastify from 'fastify';
 import { app } from './app/app';
-import 'dotenv/config';
+// Load dotenv only in development
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv/config');
+}
 
 
 const host = process.env.HOST ?? 'localhost';

@@ -21,9 +21,11 @@ spec:
         app: api
     spec:
       serviceAccountName: yellowbooks-sa
+      imagePullSecrets:
+      - name: ecr-registry-secret
       containers:
       - name: api
-        image: 754029048634.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3001

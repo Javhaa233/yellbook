@@ -44,6 +44,6 @@ EXPOSE 3000
 ENV NEXT_PUBLIC_BACKEND_URL=http://api:3001
 
 # Use dumb-init to handle signals properly
-ENTRYPOINT ["/usr/sbin/dumb-init", "--"]
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 
 CMD ["node_modules/.bin/next", "start", "-p", "3000"]

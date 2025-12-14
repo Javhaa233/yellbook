@@ -16,6 +16,10 @@ export async function app(fastify: FastifyInstance, opts: AppOptions) {
   fastify.register(AutoLoad, {
     dir: path.join(__dirname, 'plugins'),
     options: { ...opts },
+    ignoreFilter: (path) => false, // Load all plugins
+    autoHooks: true,
+    autoHooksPattern: /^[_.]?auto/,
+    forceESM: false,
   });
 
   // This loads all plugins defined in routes

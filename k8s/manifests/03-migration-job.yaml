@@ -11,7 +11,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: migrate
-        image: 754029048634.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
         imagePullPolicy: Always
         command: 
           - /bin/sh
@@ -36,4 +36,4 @@ spec:
             memory: "512Mi"
             cpu: "500m"
       imagePullSecrets:
-      - name: ecr-secret
+      - name: ecr-registry-secret
