@@ -8,7 +8,12 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/load-balancer-name: yellbook-alb
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    # Enable both HTTP and HTTPS listeners
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    # Redirect all HTTP to HTTPS
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # Replace this ARN with your ACM certificate ARN (ap-southeast-1)
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:619425981538:certificate/CHANGE-ME
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'

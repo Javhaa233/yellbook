@@ -16,11 +16,13 @@
         "ec2:DescribeInstances",
         "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeTags",
+        "ec2:GetSecurityGroupsForVpc",
         "ec2:GetCoipPoolUsage",
         "ec2:DescribeCoipPools",
         "elasticloadbalancing:DescribeLoadBalancers",
         "elasticloadbalancing:DescribeLoadBalancerAttributes",
         "elasticloadbalancing:DescribeListeners",
+        "elasticloadbalancing:DescribeListenerAttributes",
         "elasticloadbalancing:DescribeListenerCertificates",
         "elasticloadbalancing:DescribeSSLPolicies",
         "elasticloadbalancing:DescribeRules",
@@ -148,7 +150,23 @@
       ],
       "Condition": {
         "Null": {
-          "aws:RequestTag/elbv2.k8s.aws/cluster": "true",
+          "aws:RequestTag/elbv2.k8s.aws/cluster": "false"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "elasticloadbalancing:AddTags",
+        "elasticloadbalancing:RemoveTags"
+      ],
+      "Resource": [
+        "arn:aws:elasticloadbalancing:*:*:targetgroup/*/*",
+        "arn:aws:elasticloadbalancing:*:*:loadbalancer/net/*/*",
+        "arn:aws:elasticloadbalancing:*:*:loadbalancer/app/*/*"
+      ],
+      "Condition": {
+        "Null": {
           "aws:ResourceTag/elbv2.k8s.aws/cluster": "false"
         }
       }
