@@ -10,7 +10,7 @@ on:
 env:
   AWS_REGION: ap-southeast-1
   CLUSTER_NAME: yellbook-eks
-  ECR_REGISTRY: 754029048634.dkr.ecr.ap-southeast-1.amazonaws.com
+  ECR_REGISTRY: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com
 
 jobs:
   deploy:
@@ -25,7 +25,7 @@ jobs:
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        role-to-assume: arn:aws:iam::754029048634:role/github-actions-eks-deploy-role
+        role-to-assume: arn:aws:iam::619425981538:role/github-actions-eks-deploy-role
         aws-region: ${{ env.AWS_REGION }}
 
     - name: Check if cluster exists
@@ -61,6 +61,7 @@ jobs:
         kubectl apply -f k8s/manifests/00-namespace.yaml
         kubectl apply -f k8s/manifests/01-configmap-secret.yaml
         kubectl apply -f k8s/manifests/02-postgres.yaml
+        kubectl apply -f k8s/manifests/08-redis.yaml
         sleep 30
         kubectl apply -f k8s/manifests/03-migration-job.yaml
         sleep 10
@@ -72,8 +73,8 @@ jobs:
     - name: Wait for deployments
       if: steps.check_cluster.outputs.cluster_exists == 'true'
       run: |
-        kubectl rollout status deployment/yellbook-api -n yellowbooks --timeout=5m || true
-        kubectl rollout status deployment/yellbook-web -n yellowbooks --timeout=5m || true
+        kubectl rollout status deployment/api -n yellowbooks --timeout=5m || true
+        kubectl rollout status deployment/web -n yellowbooks --timeout=5m || true
 
     - name: Check pod status
       if: steps.check_cluster.outputs.cluster_exists == 'true'

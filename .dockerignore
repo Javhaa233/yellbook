@@ -1,6 +1,6 @@
-node_modules
-dist
-.next
+**/node_modules
+**/dist
+**/.next
 .git
 .gitignore
 .env
@@ -15,3 +15,11 @@ yarn-error.log*
 coverage
 .nyc_output
 tmp
+.nx
+.github
+.vscode
+*.md
+k8s
+scripts
+apps/web/.next
+apps/web/node_modules

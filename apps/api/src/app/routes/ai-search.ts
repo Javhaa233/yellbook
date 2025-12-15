@@ -1,7 +1,7 @@
 import { FastifyPluginAsync, FastifyRequest, FastifyReply } from 'fastify';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
-import { createClient } from 'redis';
+import { createClient, type RedisClientType } from 'redis';
 
 interface SearchResult {
   id: string;
@@ -18,20 +18,46 @@ interface AISearchRequest {
 }
 
 const prisma = new PrismaClient();
-const redis = createClient({
-  socket: {
-    host: process.env.REDIS_HOST || 'localhost',
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-  },
-  password: process.env.REDIS_PASSWORD,
-});
+
+let redisClient: RedisClientType | null = null;
+
+function getRedisClient(): RedisClientType | null {
+  const redisHost = process.env.REDIS_HOST;
+  const redisPort = process.env.REDIS_PORT;
+  const redisPassword = process.env.REDIS_PASSWORD;
+
+  // If Redis isn't configured, run without caching.
+  if (!redisHost) return null;
+
+  if (!redisClient) {
+    redisClient = createClient({
+      socket: {
+        host: redisHost,
+        port: parseInt(redisPort || '6379'),
+      },
+      password: redisPassword,
+    });
+
+    redisClient.on('error', (err: Error) => console.error('Redis error:', err));
+  }
+
+  return redisClient;
+}
+
+async function ensureRedisConnected(client: RedisClientType): Promise<boolean> {
+  if (client.isOpen) return true;
+  try {
+    await client.connect();
+    return true;
+  } catch (error) {
+    console.error('Redis connect error:', error);
+    return false;
+  }
+}
 
 const GEMINI_API_KEY = process.env.OPENAI_API_KEY; // Using same env var
 const EMBEDDING_MODEL = 'text-embedding-004';
 const CACHE_TTL = 3600; // 1 hour
-
-// Connect to Redis
-redis.on('error', (err: Error) => console.error('Redis error:', err));
 
 async function getEmbedding(text: string): Promise<number[]> {
   try {
@@ -81,10 +107,13 @@ async function searchYellowBooks(req: AISearchRequest): Promise<SearchResult[]> 
   // Check cache
   if (useCache) {
     try {
-      const cached = await redis.get(`ai-search:${query}`);
-      if (cached) {
-        console.log(`📦 Cache hit: ${query}`);
-        return JSON.parse(cached);
+      const client = getRedisClient();
+      if (client && (await ensureRedisConnected(client))) {
+        const cached = await client.get(`ai-search:${query}`);
+        if (cached) {
+          console.log(`📦 Cache hit: ${query}`);
+          return JSON.parse(cached);
+        }
       }
     } catch (error) {
       console.error('Cache lookup error:', error);
@@ -129,12 +158,11 @@ async function searchYellowBooks(req: AISearchRequest): Promise<SearchResult[]> 
   // Cache results
   if (useCache) {
     try {
-      await redis.setEx(
-        `ai-search:${query}`,
-        CACHE_TTL,
-        JSON.stringify(results)
-      );
-      console.log(`💾 Cached: ${query}`);
+      const client = getRedisClient();
+      if (client && (await ensureRedisConnected(client))) {
+        await client.setEx(`ai-search:${query}`, CACHE_TTL, JSON.stringify(results));
+        console.log(`💾 Cached: ${query}`);
+      }
     } catch (error) {
       console.error('Cache save error:', error);
     }
@@ -144,11 +172,6 @@ async function searchYellowBooks(req: AISearchRequest): Promise<SearchResult[]> 
 }
 
 const aiSearchRoutes: FastifyPluginAsync = async (fastify) => {
-  // Connect Redis
-  if (!redis.isOpen) {
-    await redis.connect();
-  }
-
   // POST /api/ai/yellow-books/search
   fastify.post(
     '/api/ai/yellow-books/search',
@@ -175,13 +198,18 @@ const aiSearchRoutes: FastifyPluginAsync = async (fastify) => {
         const queryParams = request.query as { query?: string };
         const { query } = queryParams;
 
+        const client = getRedisClient();
+        if (!client || !(await ensureRedisConnected(client))) {
+          return reply.send({ message: 'Redis is not configured; cache is disabled.' });
+        }
+
         if (query) {
-          await redis.del(`ai-search:${query}`);
+          await client.del(`ai-search:${query}`);
           reply.send({ message: `Cache cleared for query: ${query}` });
         } else {
-          const keys = await redis.keys('ai-search:*');
+          const keys = await client.keys('ai-search:*');
           if (keys.length > 0) {
-            await redis.del(keys);
+            await client.del(keys);
           }
           reply.send({ message: 'All cache cleared' });
         }

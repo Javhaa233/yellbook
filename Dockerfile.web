@@ -3,11 +3,31 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json nx.json tsconfig.base.json eslint.config.mjs ./
+# Copy only package files first for better caching
+COPY package.json package-lock.json nx.json tsconfig.base.json tsconfig.json ./
+COPY apps/web/package.json ./apps/web/
+COPY libs/config/package.json ./libs/config/
+COPY libs/types/package.json ./libs/types/
+
+RUN npm install
+
+# Copy Prisma schema and generate client
+COPY apps/api/prisma ./apps/api/prisma
+RUN npx prisma generate --schema=./apps/api/prisma/schema.prisma
+
+# Now copy the rest of the source code
+COPY eslint.config.mjs ./
 COPY apps/web ./apps/web
 COPY libs ./libs
 
-RUN npm install
+# Disable Nx daemon in Docker
+ENV NX_DAEMON=false
+
+# Sync Nx workspace
+RUN npx nx sync
+
+# Build libs first (config only - types has no build target)
+RUN npx nx build @yellbook/config
 
 # Build Web with Nx from root
 RUN npx nx build @yellbook/web
@@ -21,16 +41,20 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Copy package files
-COPY package.json package-lock.json ./
-
-# Install production dependencies only
+# Install production dependencies for the web app (ensures Next version matches build output)
 ENV NODE_ENV=production
-RUN npm ci --only=production && npm cache clean --force
+COPY apps/web/package.json ./package.json
+RUN npm install --omit=dev && npm cache clean --force
 
 # Copy built app from builder - Next.js output is in apps/web/.next (not dist/)
 COPY --from=builder /app/apps/web/.next ./.next
 COPY --from=builder /app/apps/web/public ./public/
 COPY --from=builder /app/apps/web/package.json ./package.json
+
+# Prisma client artifacts are generated in builder stage (schema lives under apps/api)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
 
 # Create necessary directories if they don't exist
 RUN mkdir -p /app/.next/cache && chmod -R 755 /app/.next

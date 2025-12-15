@@ -22,20 +22,50 @@ spec:
     spec:
       serviceAccountName: yellowbooks-sa
       imagePullSecrets:
-      - name: ecr-registry-secret
+      - name: ecr-secret
       containers:
       - name: web
-        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web:latest
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web:revalidate60
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
           name: http
         env:
+        - name: INTERNAL_BACKEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: yellowbooks-config
+              key: INTERNAL_BACKEND_URL
         - name: NEXT_PUBLIC_BACKEND_URL
           valueFrom:
             configMapKeyRef:
               name: yellowbooks-config
               key: NEXT_PUBLIC_BACKEND_URL
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: yellowbooks-config
+              key: DATABASE_URL
+        - name: NEXTAUTH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: yellowbooks-config
+              key: NEXTAUTH_URL
+        - name: NEXTAUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: yellowbooks-secrets
+              key: NEXTAUTH_SECRET
+        - name: GITHUB_ID
+          valueFrom:
+            secretKeyRef:
+              name: yellowbooks-secrets
+              key: GITHUB_ID
+        - name: GITHUB_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: yellowbooks-secrets
+              key: GITHUB_SECRET
         - name: NODE_ENV
           value: production
         resources:
@@ -57,8 +87,6 @@ spec:
             port: 3000
           initialDelaySeconds: 5
           periodSeconds: 5
-      imagePullSecrets:
-      - name: ecr-secret
 
 ---
 apiVersion: v1

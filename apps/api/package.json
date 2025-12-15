@@ -146,13 +146,13 @@
     "axios": "^1.7.8",
     "fastify": "~5.2.1",
     "fastify-plugin": "~5.0.1",
+    "prisma": "^6.16.3",
     "redis": "^4.7.0",
     "tsx": "^4.20.5",
     "zod": "^4.1.11"
   },
   "devDependencies": {
     "@nx/next": "^21.5.2",
-    "prisma": "^6.16.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.2"
   }

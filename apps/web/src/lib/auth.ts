@@ -1,6 +1,6 @@
 import { type NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
-import { prisma } from "@yellbook/config";
+import { prisma } from "@/lib/prisma";
 
 export const authOptions: NextAuthOptions = {
   providers: [

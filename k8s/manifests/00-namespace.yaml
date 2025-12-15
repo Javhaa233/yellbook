@@ -12,4 +12,4 @@ metadata:
   name: yellowbooks-sa
   namespace: yellowbooks
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::754029048634:role/yellowbooks-eks-role
+    eks.amazonaws.com/role-arn: arn:aws:iam::619425981538:role/yellowbooks-eks-role

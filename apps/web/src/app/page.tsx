@@ -8,7 +8,7 @@ import { fetchYellowBookCategories, fetchYellowBookList } from "@/utils/trpc";
 import type { YellowBookEntry, YellowBookCategory } from "@lib/types";
 import { SearchBar } from "@/components/search-bar";
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 export default async function HomePage() {
   let entries: YellowBookEntry[] = [];

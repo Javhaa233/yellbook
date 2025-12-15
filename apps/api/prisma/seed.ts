@@ -305,6 +305,20 @@ const entries: SeedEntry[] = [
 async function seed() {
   console.log('🌱 Seeding Yellow Book data...');
 
+  const adminEmail = 'admin@yellbook.com';
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await (prisma as any).user.upsert({
+    where: { email: adminEmail },
+    update: {
+      role: 'ADMIN',
+    },
+    create: {
+      email: adminEmail,
+      name: 'Admin',
+      role: 'ADMIN',
+    },
+  });
+
   await prisma.yellowBookEntryTag.deleteMany();
   await prisma.yellowBookEntry.deleteMany();
   await prisma.yellowBookTag.deleteMany();

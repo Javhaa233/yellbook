@@ -22,10 +22,10 @@ spec:
     spec:
       serviceAccountName: yellowbooks-sa
       imagePullSecrets:
-      - name: ecr-registry-secret
+      - name: ecr-secret
       containers:
       - name: api
-        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:seedfix4
         imagePullPolicy: Always
         ports:
         - containerPort: 3001
@@ -36,6 +36,26 @@ spec:
             configMapKeyRef:
               name: yellowbooks-config
               key: DATABASE_URL
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: yellowbooks-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: yellowbooks-config
+              key: REDIS_PORT
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: yellowbooks-secrets
+              key: OPENAI_API_KEY
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: yellowbooks-secrets
+              key: GEMINI_API_KEY
         - name: NODE_ENV
           value: production
         resources:
@@ -57,8 +77,7 @@ spec:
             port: 3001
           initialDelaySeconds: 5
           periodSeconds: 5
-      imagePullSecrets:
-      - name: ecr-secret
+
 
 ---
 apiVersion: v1

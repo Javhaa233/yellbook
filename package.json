@@ -17,6 +17,9 @@
     "clean:deps": "rm -rf node_modules apps/*/node_modules && bun install"
   },
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "@fastify/autoload": "~6.0.3",
     "@fastify/cors": "^11.1.0",

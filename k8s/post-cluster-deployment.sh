@@ -7,7 +7,7 @@ set -e
 
 CLUSTER_NAME="yellbook-eks"
 REGION="ap-southeast-1"
-AWS_ACCOUNT_ID="754029048634"
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 NAMESPACE="yellowbooks"
 APP_DOMAIN="yellbook.example.com"  # Update with actual domain
 
@@ -110,7 +110,7 @@ done
 # Step 9: Wait for deployments
 echo "⏳ Waiting for deployments to be ready..."
 kubectl wait --for=condition=available --timeout=300s \
-  deployment/yellbook-api deployment/yellbook-web \
+  deployment/api deployment/web \
   -n "$NAMESPACE" || echo "Deployments taking longer than expected"
 
 # Step 10: Get ingress details

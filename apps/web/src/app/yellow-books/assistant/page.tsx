@@ -28,6 +28,9 @@ export default function AssistantPage() {
   const [cacheStats, setCacheStats] = useState({ hits: 0, misses: 0 });
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  
+  const apiBase = (process.env.NEXT_PUBLIC_BACKEND_URL || '').replace(/\/$/, '');
+
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -48,7 +51,8 @@ export default function AssistantPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/ai/yellow-books/search', {
+      const url = apiBase ? `${apiBase}/api/ai/yellow-books/search` : '/api/ai/yellow-books/search';
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +110,8 @@ export default function AssistantPage() {
 
   const handleClearCache = async () => {
     try {
-      const response = await fetch('/api/ai/yellow-books/cache', {
+      const url = apiBase ? `${apiBase}/api/ai/yellow-books/cache` : '/api/ai/yellow-books/cache';
+      const response = await fetch(url, {
         method: 'DELETE',
       });
 
