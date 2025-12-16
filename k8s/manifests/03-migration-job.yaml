@@ -11,7 +11,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: migrate
-        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:seedfix4
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/api:latest
         imagePullPolicy: Always
         command: 
           - /bin/sh

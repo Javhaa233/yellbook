@@ -14,7 +14,7 @@ export default function NotFound() {
       </p>
 
       <Link href="/yellow-books">
-        <Button className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3">
+        <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3">
           Шар номын жагсаалт руу буцах
         </Button>
       </Link>

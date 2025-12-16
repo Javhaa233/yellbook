@@ -12,12 +12,21 @@ import YellowBooksMapIsland from "@/components/yellow-books-map";
 // Энэ route-ийг заавал SSR болгоно
 //export const dynamic = "force-dynamic";
 
-async function SearchResults({ query }: { query: string }) {
+async function SearchResults({
+  query,
+  categorySlug,
+}: {
+  query: string;
+  categorySlug?: string;
+}) {
   let entries: YellowBookEntry[] = [];
   
   try {
     entries = await fetchYellowBookList(
-      { search: query },
+      {
+        search: query || undefined,
+        categorySlug,
+      },
       {
         // SSR – cache: 'no-store'
         cache: "no-store",
@@ -33,7 +42,9 @@ async function SearchResults({ query }: { query: string }) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-600 text-lg">
-          &quot;{query}&quot; гэсэн хайлтад байгууллага олдсонгүй.
+          {query
+            ? `"${query}" гэсэн хайлтад байгууллага олдсонгүй.`
+            : "Энэ ангилалд байгууллага олдсонгүй."}
         </p>
         <p className="text-gray-500 mt-2">
           Өөр түлхүүр үгээр хайлт хийнэ үү.
@@ -85,27 +96,29 @@ async function SearchResults({ query }: { query: string }) {
   );
 }
 
-export default function SearchPage({
+export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string; categorySlug?: string }>;
 }) {
-  const query = searchParams.q || "";
+  const { q, categorySlug } = await searchParams;
+  const query = q || "";
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-yellow-50 border-b-2 border-yellow-600 py-6">
+      <div className="bg-blue-50 border-b-2 border-blue-600 py-6">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Хайлтын үр дүн
           </h1>
           <p className="text-gray-600">
             {query && `"${query}" түлхүүр үгээр хайсан`}
+            {!query && categorySlug && `"${categorySlug}" ангиллаар хайсан`}
           </p>
           <Link href="/">
             <Button
               variant="outline"
-              className="border-yellow-600 text-yellow-600 hover:bg-yellow-50 mt-4"
+              className="border-blue-600 text-blue-600 hover:bg-blue-50 mt-4"
             >
               Нүүр рүү буцах
             </Button>
@@ -114,10 +127,10 @@ export default function SearchPage({
       </div>
 
       <main className="container mx-auto px-4 py-8 space-y-10">
-        {query ? (
+        {query || categorySlug ? (
           <>
             <Suspense fallback={<BusinessListSkeleton />}>
-              <SearchResults query={query} />
+              <SearchResults query={query || ""} categorySlug={categorySlug} />
             </Suspense>
 
             {/* CLIENT MAP ISLAND – хайлтын үр дүнгийн газрын зураг */}
@@ -128,7 +141,7 @@ export default function SearchPage({
                 </div>
               }
             >
-              <YellowBooksMapIsland query={query} />
+              <YellowBooksMapIsland query={query} categorySlug={categorySlug} />
             </Suspense>
           </>
         ) : (

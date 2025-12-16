@@ -77,19 +77,29 @@ async function YellowBooksContent() {
 export default function YellowBooksPage() {
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-yellow-50 border-b-2 border-yellow-600 py-6">
+      <div className="bg-blue-50 border-b-2 border-blue-600 py-6">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             Байгууллагын Жагсаалт
           </h1>
-          <Link href="/">
-            <Button
-              variant="outline"
-              className="border-yellow-600 text-yellow-600 hover:bg-yellow-50"
-            >
-              Нүүр рүү буцах
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/">
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                Нүүр рүү буцах
+              </Button>
+            </Link>
+            <Link href="/yellow-books/assistant">
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                AI Search
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 

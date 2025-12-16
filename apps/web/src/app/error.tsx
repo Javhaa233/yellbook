@@ -14,7 +14,7 @@ export default function ErrorPage({
         <p className="text-gray-600 mb-8">{error.message || "Ямар нэгэн алдаа гарсан байна"}</p>
         <button
           onClick={() => reset()}
-          className="px-6 py-3 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+          className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Дахин оролдох
         </button>

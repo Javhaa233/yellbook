@@ -18,7 +18,7 @@ export default async function AdminLayout({
             <div className="flex items-center space-x-8">
               <Link
                 href="/admin"
-                className="font-semibold hover:text-yellow-400"
+                className="font-semibold hover:text-blue-400"
               >
                 🔐 Admin Panel
               </Link>

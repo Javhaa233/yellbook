@@ -2,6 +2,7 @@ import { requireAdminSession } from "@/lib/server-auth";
 
 export default async function AdminDashboard() {
   const session = await requireAdminSession();
+  const user = session?.user as { name?: string | null; email?: string | null } | undefined;
 
   return (
     <div className="space-y-8">
@@ -9,8 +10,7 @@ export default async function AdminDashboard() {
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
         <p className="text-gray-400">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-          Welcome, {session?.user?.name || (session?.user as any)?.email}
+          Welcome, {user?.name || user?.email}
         </p>
       </div>
 
@@ -32,6 +32,13 @@ export default async function AdminDashboard() {
           >
             <div className="font-semibold mb-1">👥 Manage Users</div>
             <div className="text-sm text-gray-400">View and manage users</div>
+          </a>
+          <a
+            href="/admin/businesses"
+            className="block p-4 bg-gray-700 hover:bg-gray-600 rounded border border-gray-600 text-center transition"
+          >
+            <div className="font-semibold mb-1">🏢 Manage Businesses</div>
+            <div className="text-sm text-gray-400">CRUD байгууллагууд</div>
           </a>
         </div>
       </div>

@@ -71,16 +71,26 @@ export default async function YellowBookDetailPage({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="bg-yellow-50 border-b-2 border-yellow-600 py-6">
+      <div className="bg-blue-50 border-b-2 border-blue-600 py-6">
         <div className="container mx-auto px-4">
-          <Link href="/yellow-books">
-            <Button
-              variant="outline"
-              className="border-yellow-600 text-yellow-600 hover:bg-yellow-50 mb-4"
-            >
-              ← Буцах
-            </Button>
-          </Link>
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Link href="/yellow-books">
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                ← Буцах
+              </Button>
+            </Link>
+            <Link href="/yellow-books/assistant">
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                AI Search
+              </Button>
+            </Link>
+          </div>
           <h1 className="text-4xl font-bold text-gray-800">{entry.name}</h1>
           <p className="text-gray-600 mt-2">{entry.category.name}</p>
         </div>
@@ -109,7 +119,7 @@ export default async function YellowBookDetailPage({
                 <div className="space-y-4">
                   {entry.address && (
                     <div className="flex items-start gap-3">
-                      <MapPin className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-1" />
+                      <MapPin className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="font-semibold text-gray-800">
                           Байршил
@@ -125,14 +135,14 @@ export default async function YellowBookDetailPage({
 
                   {phoneContact && (
                     <div className="flex items-start gap-3">
-                      <Phone className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-1" />
+                      <Phone className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="font-semibold text-gray-800">
                           Утасны дугаар
                         </h3>
                         <a
                           href={`tel:${phoneContact.value}`}
-                          className="text-yellow-600 hover:underline font-semibold"
+                          className="text-blue-600 hover:underline font-semibold"
                         >
                           {phoneContact.value}
                         </a>
@@ -142,12 +152,12 @@ export default async function YellowBookDetailPage({
 
                   {emailContact && (
                     <div className="flex items-start gap-3">
-                      <Mail className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-1" />
+                      <Mail className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="font-semibold text-gray-800">Имэйл</h3>
                         <a
                           href={`mailto:${emailContact.value}`}
-                          className="text-yellow-600 hover:underline"
+                          className="text-blue-600 hover:underline"
                         >
                           {emailContact.value}
                         </a>
@@ -157,7 +167,7 @@ export default async function YellowBookDetailPage({
 
                   {entry.hours && (
                     <div className="flex items-start gap-3">
-                      <Clock className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-1" />
+                      <Clock className="h-5 w-5 text-blue-600 flex-shrink-0 mt-1" />
                       <div>
                         <h3 className="font-semibold text-gray-800">
                           Ажлын цаг
@@ -181,7 +191,7 @@ export default async function YellowBookDetailPage({
                 <div className="space-y-3 mb-6">
                   {phoneContact && (
                     <a href={`tel:${phoneContact.value}`}>
-                      <Button className="w-full bg-yellow-600 text-white hover:bg-yellow-700">
+                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
                         Залгах
                       </Button>
                     </a>
@@ -191,7 +201,7 @@ export default async function YellowBookDetailPage({
                     <a href={`mailto:${emailContact.value}`}>
                       <Button
                         variant="outline"
-                        className="w-full border-yellow-600 text-yellow-600 hover:bg-yellow-50"
+                        className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
                       >
                         Имэйл илгээх
                       </Button>
@@ -206,7 +216,7 @@ export default async function YellowBookDetailPage({
                     >
                       <Button
                         variant="outline"
-                        className="w-full border-yellow-600 text-yellow-600 hover:bg-yellow-50"
+                        className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
                       >
                         Газрын зураг
                       </Button>
@@ -225,7 +235,7 @@ export default async function YellowBookDetailPage({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Facebook className="h-6 w-6 text-yellow-600 hover:text-yellow-700 cursor-pointer" />
+                        <Facebook className="h-6 w-6 text-blue-600 hover:text-blue-700 cursor-pointer" />
                       </a>
                     )}
                     {instagramContact && (
@@ -234,7 +244,7 @@ export default async function YellowBookDetailPage({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Instagram className="h-6 w-6 text-yellow-600 hover:text-yellow-700 cursor-pointer" />
+                        <Instagram className="h-6 w-6 text-blue-600 hover:text-blue-700 cursor-pointer" />
                       </a>
                     )}
                     {websiteContact && (
@@ -243,7 +253,7 @@ export default async function YellowBookDetailPage({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Globe className="h-6 w-6 text-yellow-600 hover:text-yellow-700 cursor-pointer" />
+                        <Globe className="h-6 w-6 text-blue-600 hover:text-blue-700 cursor-pointer" />
                       </a>
                     )}
                   </div>

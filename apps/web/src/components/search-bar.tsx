@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,11 +14,22 @@ interface SearchBarProps {
 
 export function SearchBar({ categories }: SearchBarProps) {
   const [inputValue, setInputValue] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>();
+  const router = useRouter();
+
+  const navigate = (query?: string, categorySlug?: string) => {
+    const params = new URLSearchParams();
+
+    const trimmed = query?.trim();
+    if (trimmed) params.set('q', trimmed);
+    if (categorySlug) params.set('categorySlug', categorySlug);
+
+    const qs = params.toString();
+    router.push(qs ? `/yellow-books/search?${qs}` : '/yellow-books');
+  };
 
   const handleSearch = (): void => {
-    setSearchTerm(inputValue.trim());
+    navigate(inputValue, selectedCategory);
   };
 
   return (
@@ -39,18 +52,27 @@ export function SearchBar({ categories }: SearchBarProps) {
               />
             </div>
             <Button
-              className="bg-yellow-600 text-white hover:bg-yellow-700"
+              className="bg-blue-600 text-white hover:bg-blue-700"
               onClick={handleSearch}
             >
               Хайх
             </Button>
-            {searchTerm && (
+            <Link href="/yellow-books/assistant">
+              <Button
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
+                AI Search
+              </Button>
+            </Link>
+            {(inputValue.trim() || selectedCategory) && (
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={() => {
-                  setSearchTerm("");
                   setInputValue("");
+                  setSelectedCategory(undefined);
+                  router.push('/');
                 }}
               >
                 <X className="h-4 w-4" />
@@ -62,8 +84,11 @@ export function SearchBar({ categories }: SearchBarProps) {
             <Button
               variant={selectedCategory === undefined ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedCategory(undefined)}
-              className={selectedCategory === undefined ? "bg-yellow-600 text-white" : "bg-gray-200"}
+              onClick={() => {
+                setSelectedCategory(undefined);
+                navigate(inputValue, undefined);
+              }}
+              className={selectedCategory === undefined ? "bg-blue-600 text-white" : "bg-gray-200"}
             >
               Бүх үйлчилгээ
             </Button>
@@ -72,10 +97,13 @@ export function SearchBar({ categories }: SearchBarProps) {
                 key={category.id}
                 variant={selectedCategory === category.slug ? "default" : "outline"}
                 size="sm"
-                onClick={() => setSelectedCategory(category.slug)}
+                onClick={() => {
+                  setSelectedCategory(category.slug);
+                  navigate(inputValue, category.slug);
+                }}
                 className={
                   selectedCategory === category.slug
-                    ? "bg-yellow-600 text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-gray-200 hover:bg-gray-300"
                 }
               >

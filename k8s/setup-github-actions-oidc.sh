@@ -1,26 +1,32 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
-AWS_ACCOUNT_ID="754029048634"
-GITHUB_REPO="Baterdene23/yellbook"
+# Usage:
+#   GITHUB_REPO="Javhaa233/yellbook" ./k8s/setup-github-actions-oidc.sh
+# Defaults are set for this repository.
+
+AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+GITHUB_REPO=${GITHUB_REPO:-"Javhaa233/yellbook"}
 
 echo "Creating GitHub Actions OIDC IAM Role"
+echo "AWS Account ID: ${AWS_ACCOUNT_ID}"
+echo "GitHub repo: ${GITHUB_REPO}"
 
 # Trust Policy JSON
-cat > /tmp/github-actions-trust-policy.json << 'EOF'
+cat > /tmp/github-actions-trust-policy.json << EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::754029048634:oidc-provider/token.actions.githubusercontent.com"
+        "Federated": "arn:aws:iam::${AWS_ACCOUNT_ID}:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
           "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
-          "token.actions.githubusercontent.com:sub": "repo:Baterdene23/yellbook:ref:refs/heads/main"
+          "token.actions.githubusercontent.com:sub": "repo:${GITHUB_REPO}:ref:refs/heads/main"
         }
       }
     }
@@ -66,7 +72,7 @@ cat > /tmp/eks-iam-policy.json << 'EOF'
         "iam:GetRole",
         "iam:PassRole"
       ],
-      "Resource": "arn:aws:iam::754029048634:role/*"
+      "Resource": "arn:aws:iam::${AWS_ACCOUNT_ID}:role/*"
     }
   ]
 }
@@ -78,4 +84,4 @@ aws iam put-role-policy \
   --policy-document file:///tmp/eks-iam-policy.json
 
 echo "✅ GitHub Actions IAM Role created successfully"
-echo "   ARN: arn:aws:iam::754029048634:role/github-actions-eks-deploy-role"
+echo "   ARN: arn:aws:iam::${AWS_ACCOUNT_ID}:role/github-actions-eks-deploy-role"

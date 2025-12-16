@@ -12,10 +12,11 @@ Deploy Yellbook application to AWS EKS (Elastic Kubernetes Service) with:
 ## Prerequisites
 
 - AWS Account with appropriate IAM permissions
-- `kubectl` installed and configured
 - `aws-cli` v2
-- `eksctl` (for cluster creation) or use CloudFormation
-- AWS Certificate Manager certificate for HTTPS
+- `kubectl` installed
+- `helm` installed (for AWS Load Balancer Controller)
+- A public domain you control in Route53 (or can manage DNS for)
+- AWS Certificate Manager (ACM) certificate issued in **ap-southeast-1** for HTTPS
 
 ## Architecture
 
@@ -28,26 +29,17 @@ Internet → Route53 → ALB (Ingress) → VPC
 ```
 
 ## Step 1: Create EKS Cluster
+Create the EKS cluster using the CloudFormation template:
 
-### Status: ✅ In Progress
+```bash
+aws cloudformation create-stack \
+  --stack-name yellbook-eks-stack \
+  --template-body file://k8s/eks-cluster-cloudformation.yaml \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --region ap-southeast-1
+```
 
-The EKS cluster is currently being created via CloudFormation stack `yellbook-eks-stack` in ap-southeast-1.
-
-**Current Progress:**
-- EKS Cluster: ✅ CREATE_COMPLETE (created at 05:34:51 UTC)
-- NodeGroup: ⏳ CREATE_IN_PROGRESS (started at 05:34:52 UTC)
-- Estimated time: 10-15 more minutes
-
-**CloudFormation Template Used:**
-- Location: `k8s/eks-cluster-cloudformation.yaml`
-- Features:
-  - VPC with public/private subnets across 2 AZs
-  - t3.medium instances (2 nodes, scalable to 4)
-  - Security groups configured
-  - IAM roles for cluster and nodes
-  - Disabled cluster logging (removed to pass validation)
-
-**Monitor Progress:**
+Monitor progress:
 ```bash
 aws cloudformation describe-stacks \
   --stack-name yellbook-eks-stack \
@@ -57,7 +49,7 @@ aws cloudformation describe-stacks \
 
 When complete, stack status will be `CREATE_COMPLETE`.
 
-## Step 1b: After Cluster Creation - Execute Deployment Scripts
+## Step 1b: After Cluster Creation - Connect kubectl
 
 Once the CloudFormation stack shows `CREATE_COMPLETE`, run these scripts in order:
 
@@ -130,17 +122,50 @@ kubectl get hpa -n yellowbooks
 
 ## Step 2: Setup OIDC Provider
 
+This lab uses two OIDC flows:
+
+1) **EKS OIDC** for IRSA (pods assume an IAM role via Kubernetes ServiceAccount)
+2) **GitHub Actions OIDC** for CI deploy (workflow assumes an IAM role without long-lived AWS keys)
+
 ```bash
 # Make setup scripts executable
 chmod +x k8s/setup-oidc.sh
 chmod +x k8s/setup-iam-role.sh
+chmod +x k8s/setup-github-actions-oidc.sh
 
 # Create OIDC Provider
 ./k8s/setup-oidc.sh
 
 # Create IAM Role for Service Accounts
 ./k8s/setup-iam-role.sh
+
+# Create IAM Role for GitHub Actions OIDC (deploy)
+# Optionally override repository:
+#   GITHUB_REPO="Javhaa233/yellbook" ./k8s/setup-github-actions-oidc.sh
+./k8s/setup-github-actions-oidc.sh
 ```
+
+### Step 2b: aws-auth / RBAC mapping (required for GitHub Actions deploy)
+
+Even if GitHub Actions can assume an IAM role, Kubernetes will deny access unless that role is mapped in `aws-auth`.
+
+Edit the `aws-auth` ConfigMap and add the GitHub Actions role ARN:
+
+```bash
+kubectl edit configmap aws-auth -n kube-system
+```
+
+Add a `mapRoles` entry (example):
+
+```yaml
+mapRoles: |
+  - rolearn: arn:aws:iam::<AWS_ACCOUNT_ID>:role/github-actions-eks-deploy-role
+    username: github-actions
+    groups:
+      - system:masters
+```
+
+For Lab purposes, `system:masters` is the simplest way to make deployments succeed.
 
 ## Step 3: Install AWS Load Balancer Controller
 
@@ -170,11 +195,17 @@ aws acm list-certificates --region ap-southeast-1
 
 Update `k8s/manifests/07-ingress.yaml`:
 ```yaml
-alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:754029048634:certificate/YOUR_CERT_ARN
+alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:<AWS_ACCOUNT_ID>:certificate/<CERTIFICATE_ID>
 spec:
   rules:
-  - host: yellowbooks.example.com
+  - host: yellowbooks.<your-domain>
 ```
+
+This repo uses **host-based routing** (two hosts):
+- `yellowbooks.<your-domain>` → Web
+- `api.yellowbooks.<your-domain>` → API
+
+Create Route53 records for both hosts pointing to the ALB.
 
 ## Step 5: Create ECR Secret for Docker Image Pull
 

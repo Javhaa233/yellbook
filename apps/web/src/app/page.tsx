@@ -7,10 +7,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { fetchYellowBookCategories, fetchYellowBookList } from "@/utils/trpc";
 import type { YellowBookEntry, YellowBookCategory } from "@lib/types";
 import { SearchBar } from "@/components/search-bar";
+import LoginClient from "./login/LoginClient";
+import { getAuthSession } from "@/lib/server-auth";
 
 export const revalidate = 60;
 
 export default async function HomePage() {
+  const session = await getAuthSession();
+  if (!session) {
+    return <LoginClient />;
+  }
+
   let entries: YellowBookEntry[] = [];
   let categories: YellowBookCategory[] = [];
 
@@ -27,12 +34,12 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50">
-      <header className="border-b-4 border-yellow-600 bg-yellow-50/80 backdrop-blur-sm">
+      <header className="border-b-4 border-blue-600 bg-blue-50/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-5xl md:text-6xl font-bold text-yellow-700 mb-2">ШАР НОМ ЦАХИМ СИСТЕМ</h1>
+            <h1 className="text-5xl md:text-6xl font-bold text-blue-700 mb-2">ШАР НОМ ЦАХИМ СИСТЕМ</h1>
             <p className="text-lg text-gray-700">Монголын байгууллагуудын мэдээллийн сан • YellBook</p>
-            <div className="w-32 h-1 bg-yellow-600 mx-auto mt-4"></div>
+            <div className="w-32 h-1 bg-blue-600 mx-auto mt-4"></div>
           </div>
         </div>
       </header>
@@ -61,7 +68,7 @@ export default async function HomePage() {
                   <Card key={entry.id} className="bg-white border-2 border-gray-300 shadow-md hover:shadow-lg transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex flex-col lg:flex-row gap-4">
-                        <div className="w-24 h-24 bg-yellow-100 flex items-center justify-center rounded font-bold text-gray-600 flex-shrink-0">
+                        <div className="w-24 h-24 bg-blue-100 flex items-center justify-center rounded font-bold text-gray-600 flex-shrink-0">
                           {entry.name?.substring(0, 2).toUpperCase() || "YB"}
                         </div>
 
@@ -73,7 +80,7 @@ export default async function HomePage() {
                               </h2>
                             </Link>
                             {entry.category && (
-                              <Badge className="bg-yellow-600 text-white">
+                              <Badge className="bg-blue-600 text-white">
                                 {entry.category.name}
                               </Badge>
                             )}
@@ -122,22 +129,22 @@ export default async function HomePage() {
                           <div className="flex items-center gap-3 mt-3">
                             {facebookContact && (
                               <a href={facebookContact.value} target="_blank" rel="noopener noreferrer">
-                                <Facebook className="h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                                <Facebook className="h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
                               </a>
                             )}
                             {instagramContact && (
                               <a href={instagramContact.value} target="_blank" rel="noopener noreferrer">
-                                <Instagram className="h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                                <Instagram className="h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
                               </a>
                             )}
                             {websiteContact && (
                               <a href={websiteContact.value} target="_blank" rel="noopener noreferrer">
-                                <Globe className="h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                                <Globe className="h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
                               </a>
                             )}
                             {mapContact && (
                               <a href={mapContact.value} target="_blank" rel="noopener noreferrer">
-                                <MapPin className="h-4 w-4 text-gray-600 hover:text-yellow-600 cursor-pointer" />
+                                <MapPin className="h-4 w-4 text-gray-600 hover:text-blue-600 cursor-pointer" />
                               </a>
                             )}
                           </div>
@@ -146,14 +153,14 @@ export default async function HomePage() {
                         <div className="lg:w-40 flex lg:flex-col gap-2">
                           {phoneContact && (
                             <a href={`tel:${phoneContact.value}`}>
-                              <Button className="w-full bg-yellow-600 text-white hover:bg-yellow-700 text-sm">
+                              <Button className="w-full bg-blue-600 text-white hover:bg-blue-700 text-sm">
                                 Дуудах
                               </Button>
                             </a>
                           )}
                           {mapContact && (
                             <a href={mapContact.value} target="_blank" rel="noopener noreferrer">
-                              <Button variant="outline" className="w-full border-yellow-600 text-yellow-600 hover:bg-yellow-50 text-sm">
+                              <Button variant="outline" className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 text-sm">
                                 Чиглэл авах
                               </Button>
                             </a>
@@ -179,7 +186,7 @@ export default async function HomePage() {
         </div>
       </main>
 
-      <footer className="bg-yellow-600 text-white py-6 mt-8">
+      <footer className="bg-blue-600 text-white py-6 mt-8">
         <div className="container mx-auto px-4 text-center">
           <p className="font-bold">Монголын шар ном</p>
           <p className="text-sm mt-1">© 2025 Шар ном. Бүх эрх хүлээлэгдсэн.</p>

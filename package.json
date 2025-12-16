@@ -25,7 +25,7 @@
     "@fastify/cors": "^11.1.0",
     "@fastify/helmet": "^13.0.2",
     "@fastify/sensible": "~6.0.2",
-    "@prisma/client": "^6.19.0",
+    "@prisma/client": "^6.18.0",
     "@tanstack/react-query-next-experimental": "^5.90.2",
     "axios": "^1.13.2",
     "fastify": "~5.2.1",

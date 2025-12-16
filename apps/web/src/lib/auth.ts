@@ -8,6 +8,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_ID || "",
       clientSecret: process.env.GITHUB_SECRET || "",
       allowDangerousEmailAccountLinking: true,
+      // Enable Device Flow for CLI/headless authentication
+      authorization: {
+        params: {
+          scope: "read:user user:email",
+        },
+      },
     }),
   ],
   callbacks: {
@@ -35,6 +41,7 @@ export const authOptions: NextAuthOptions = {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     async jwt({ token, user }: any) {
+      // On initial sign-in, link token to DB user.
       if (user?.email) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const dbUser = await (prisma as any).user.findUnique({
@@ -45,7 +52,22 @@ export const authOptions: NextAuthOptions = {
           token.id = dbUser.id;
           token.role = dbUser.role;
         }
+        return token;
       }
+
+      // For subsequent requests, refresh role from DB so role updates take effect
+      // without forcing a new sign-in.
+      if (token?.id) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dbUser = await (prisma as any).user.findUnique({
+          where: { id: token.id as string },
+          select: { role: true },
+        });
+        if (dbUser?.role) {
+          token.role = dbUser.role;
+        }
+      }
+
       return token;
     },
 

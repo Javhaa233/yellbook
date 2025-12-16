@@ -80,7 +80,7 @@ export default function RegisterPage() {
             />
           </div>
           
-          <Button type="submit" className="w-full bg-yellow-600 text-white hover:bg-yellow-700">
+          <Button type="submit" className="w-full bg-blue-600 text-white hover:bg-blue-700">
             Бүртгүүлэх
           </Button>
         </form>
@@ -88,7 +88,7 @@ export default function RegisterPage() {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Аль хэдийн бүртгэлтэй юу?{" "}
-            <Link href="/login" className="text-yellow-600 hover:underline font-medium">
+            <Link href="/login" className="text-blue-600 hover:underline font-medium">
               Нэвтрэх
             </Link>
           </p>

@@ -8,18 +8,31 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/load-balancer-name: yellbook-alb
-    # Enable both HTTP and HTTPS listeners
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    # Redirect all HTTP to HTTPS
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
-    # Replace this ARN with your ACM certificate ARN (ap-southeast-1)
-    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:619425981538:certificate/CHANGE-ME
+    # HTTP only (no certificate required)
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '5'
-    external-dns.alpha.kubernetes.io/hostname: yellowbooks.example.com
 spec:
   rules:
+  # Default rule - allows access via ALB DNS directly
+  - http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api
+            port:
+              number: 3001
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: web
+            port:
+              number: 3000
+  # Host-based rules (optional for custom domain)
   - host: yellowbooks.example.com
     http:
       paths:

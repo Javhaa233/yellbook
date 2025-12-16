@@ -25,7 +25,7 @@ spec:
       - name: ecr-secret
       containers:
       - name: web
-        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web:revalidate60
+        image: 619425981538.dkr.ecr.ap-southeast-1.amazonaws.com/yellbook/web:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

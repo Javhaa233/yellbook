@@ -52,36 +52,36 @@ Use this checklist to verify all Lab 7 requirements are met before submission.
 - [ ] Database schema is initialized (check with migration logs)
 
 ### Step 6: API Deployment
-- [ ] Deployment `yellbook-api` exists with 2 replicas
-- [ ] Both API pods are `Running` and `Ready`
-- [ ] API service created and accessible internally
-- [ ] API health checks passing
-- [ ] Logs show no errors: `kubectl logs -f deployment/yellbook-api -n yellowbooks`
+ - [ ] Deployment `api` exists with 2 replicas
+ - [ ] Both API pods are `Running` and `Ready`
+ - [ ] API service `api` created and accessible internally
+ - [ ] API health checks passing
+ - [ ] Logs show no errors: `kubectl logs -f deployment/api -n yellowbooks`
 
 ### Step 7: Web Deployment
-- [ ] Deployment `yellbook-web` exists with 2 replicas
-- [ ] Both Web pods are `Running` and `Ready`
-- [ ] Web service created and accessible internally
-- [ ] Web health checks passing
-- [ ] Logs show no errors: `kubectl logs -f deployment/yellbook-web -n yellowbooks`
+ - [ ] Deployment `web` exists with 2 replicas
+ - [ ] Both Web pods are `Running` and `Ready`
+ - [ ] Web service `web` created and accessible internally
+ - [ ] Web health checks passing
+ - [ ] Logs show no errors: `kubectl logs -f deployment/web -n yellowbooks`
 
 ### Step 8: HPA Configuration
-- [ ] HPA exists for API deployment
-- [ ] HPA exists for Web deployment
-- [ ] `kubectl get hpa -n yellowbooks` shows both with proper targets:
-  - Min replicas: 2
-  - Max replicas: 5
-  - CPU target: 70%
-  - Memory target: 80%
+ - [ ] HPA exists for API deployment (`api-hpa`)
+ - [ ] HPA exists for Web deployment (`web-hpa`)
+ - [ ] `kubectl get hpa -n yellowbooks` shows both with proper targets:
+    - Min replicas: 2
+    - Max replicas: 5
+    - CPU target: 70%
+    - Memory target: 80%
 
 ### Step 9: ALB Ingress
-- [ ] Ingress resource `yellbook-ingress` created in yellowbooks namespace
-- [ ] ALB provisioned and has DNS name
-- [ ] `kubectl get ingress -n yellowbooks` shows ALB DNS
-- [ ] Ingress routes properly:
-  - `/api/*` → yellbook-api service
-  - `/*` → yellbook-web service
-- [ ] ACM certificate attached (if HTTPS configured)
+ - [ ] Ingress resource `yellowbooks-ingress` created in `yellowbooks` namespace
+ - [ ] ALB provisioned and has DNS name
+ - [ ] `kubectl get ingress -n yellowbooks -o wide` shows ALB DNS
+ - [ ] Host routing works (per manifest):
+    - `yellowbooks.<your-domain>` → web service
+    - `api.yellowbooks.<your-domain>` → api service
+ - [ ] ACM certificate attached (HTTPS configured)
 
 ### Step 10: Route53 & DNS
 - [ ] Route53 ALIAS record created pointing to ALB DNS
@@ -136,7 +136,7 @@ Use this checklist to verify all Lab 7 requirements are met before submission.
 4. **Ingress Status**
    ```bash
    kubectl get ingress -n yellowbooks -o wide
-   kubectl describe ingress yellbook-ingress -n yellowbooks
+   kubectl describe ingress yellowbooks-ingress -n yellowbooks
    ```
 
 5. **GitHub Actions Deploy Success**

@@ -45,6 +45,11 @@ jobs:
           --name ${{ env.CLUSTER_NAME }} \
           --region ${{ env.AWS_REGION }}
 
+    - name: Ensure namespace exists
+      if: steps.check_cluster.outputs.cluster_exists == 'true'
+      run: |
+        kubectl apply -f k8s/manifests/00-namespace.yaml
+
     - name: Create ECR secret
       if: steps.check_cluster.outputs.cluster_exists == 'true'
       run: |
@@ -58,7 +63,6 @@ jobs:
     - name: Apply Kubernetes manifests
       if: steps.check_cluster.outputs.cluster_exists == 'true'
       run: |
-        kubectl apply -f k8s/manifests/00-namespace.yaml
         kubectl apply -f k8s/manifests/01-configmap-secret.yaml
         kubectl apply -f k8s/manifests/02-postgres.yaml
         kubectl apply -f k8s/manifests/08-redis.yaml

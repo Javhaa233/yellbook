@@ -16,7 +16,7 @@ export async function requireAdminSession(): Promise<any> {
 
   const user = session.user as any;
   if (user?.role !== "ADMIN") {
-    redirect("/?error=insufficient_permissions");
+    redirect("/login?callbackUrl=/admin&error=insufficient_permissions");
   }
 
   return session;

@@ -8,13 +8,17 @@ import type { YellowBookEntry } from "@lib/types";
 
 type Props = {
   query: string;
+  categorySlug?: string;
 };
 
-export default function YellowBooksMapIsland({ query }: Props) {
+export default function YellowBooksMapIsland({ query, categorySlug }: Props) {
   const { data: entries } = useSuspenseQuery({
-    queryKey: ["yellow-books-map", query],
+    queryKey: ["yellow-books-map", query, categorySlug ?? ""],
     queryFn: () =>
-      fetchYellowBookList(query ? { search: query } : {}),
+      fetchYellowBookList({
+        search: query ? query : undefined,
+        categorySlug,
+      }),
   });
 
   return (
@@ -34,7 +38,7 @@ export default function YellowBooksMapIsland({ query }: Props) {
               key={entry.id}
               className="flex items-start gap-2 border-b pb-2 last:border-b-0 last:pb-0"
             >
-              <MapPin className="h-4 w-4 text-yellow-600 flex-shrink-0 mt-0.5" />
+              <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-medium text-gray-800 line-clamp-1">
                   {entry.name}
