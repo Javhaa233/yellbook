@@ -24,16 +24,6 @@ interface AISearchRequest {
   categorySlug?: string;
 }
 
-interface BusinessData {
-  id: string;
-  name: string;
-  summary: string;
-  embedding: number[];
-  category?: { name: string; slug: string } | null;
-  district?: string;
-  phone?: string;
-}
-
 const prisma = new PrismaClient();
 
 let redisClient: RedisClientType | null = null;
