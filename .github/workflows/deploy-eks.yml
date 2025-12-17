@@ -96,12 +96,17 @@ jobs:
         kubectl apply -f k8s/manifests/02-postgres.yaml
         kubectl apply -f k8s/manifests/08-redis.yaml
         sleep 30
+        kubectl delete job db-migration -n yellowbooks --ignore-not-found=true
         kubectl apply -f k8s/manifests/03-migration-job.yaml
         sleep 10
         kubectl apply -f k8s/manifests/04-api-deployment.yaml
         kubectl apply -f k8s/manifests/05-web-deployment.yaml
         kubectl apply -f k8s/manifests/06-hpa.yaml
         kubectl apply -f k8s/manifests/07-ingress.yaml
+
+        # Force pods to restart so they pull the newly pushed :latest images
+        kubectl rollout restart deployment/api -n yellowbooks
+        kubectl rollout restart deployment/web -n yellowbooks
 
     - name: Wait for deployments
       if: steps.check_cluster.outputs.cluster_exists == 'true'
