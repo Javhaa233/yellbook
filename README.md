@@ -189,8 +189,8 @@ yellbook/
 
 ## Repository Links
 
-- **GitHub**: https://github.com/Baterdene23/yellbook
-- **CI/CD Workflow**: https://github.com/Baterdene23/yellbook/actions/workflows/ci.yml
+- **GitHub**: https://github.com/Javhaa233/yellbook
+- **CI/CD Workflow**: https://github.com/Javhaa233/yellbook/actions/workflows/ci.yml
 - **ECR Registry**: https://console.aws.amazon.com/ecr/repositories
 npx nx show project yellbook
 ```
